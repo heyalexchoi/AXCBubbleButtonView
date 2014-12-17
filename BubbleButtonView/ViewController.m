@@ -45,13 +45,20 @@
     //    your data is in, you can use and manipulate it with this array.
     // -- These strings will serve as my bubble buttons
     NSArray *bubbleStringArray = @[@"Hello", @"this", @"is", @"a", @"test", @"of", @"the", @"BubbleButtonView", @"class", @"Each", @"one", @"of", @"these", @"is", @"a", @"button"];
+    NSMutableArray * bigArray = [bubbleStringArray mutableCopy];
+    [bigArray addObjectsFromArray:bigArray];
+    [bigArray addObjectsFromArray:bigArray];
+        [bigArray addObjectsFromArray:bigArray];
+        [bigArray addObjectsFromArray:bigArray];
     
     // Create colors for buttons
     UIColor *textColor = [UIColor colorWithRed:255/255.0 green:47/255.0 blue:51/255.0 alpha:1.0];
     UIColor *bgColor = [UIColor colorWithRed:254/255.0 green:255/255.0 blue:235/255.0 alpha:1.0];
     
     // Now make them sucka's.
-    [bubbleView fillBubbleViewWithButtons:bubbleStringArray bgColor:bgColor textColor:textColor fontSize:14];
+    [bubbleView fillBubbleViewWithButtons:bigArray bgColor:bgColor textColor:textColor fontSize:14];
+    
+//    bubbleView.backgroundColor = [UIColor brownColor];
 }
 
 

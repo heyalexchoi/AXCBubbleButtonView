@@ -10,20 +10,11 @@
 
 @protocol BBDelegate
 -(void)didClickBubbleButton:(UIButton *)bubble;
-
 @end
 
-
-
-@interface BBView : UIView {
-    __weak id <BBDelegate> delegate;
-}
-
-@property (weak) id <BBDelegate> delegate;
-
-@property (nonatomic, retain) NSMutableArray *bubbleButtonArray;
-
-
+@interface BBView : UIView
+@property (nonatomic, weak) id <BBDelegate> delegate;
+@property (nonatomic, strong) NSMutableArray *buttons;
 -(void)fillBubbleViewWithButtons:(NSArray *)strings bgColor:(UIColor *)bgColor textColor:(UIColor *)textColor fontSize:(float)fsize;
 -(void)addBubbleButtonsWithInterval:(float)ftime;
 -(void)removeBubbleButtonsWithInterval:(float)ftime;
