@@ -8,11 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h> // Don't forget QuartzCore
-#import "BBView.h"
+#import "AXCButtonView.h"
 
 @interface ViewController : UIViewController <BBDelegate> {
     // View that holds bubble buttons
-    __weak IBOutlet BBView *bubbleView;
+    __weak IBOutlet AXCButtonView *bubbleView;
     
     // Main Button
     __weak IBOutlet UIButton *mainButton;

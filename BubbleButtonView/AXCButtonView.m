@@ -6,14 +6,15 @@
 //  Copyright (c) 2013 Benjamin Gordon. All rights reserved.
 //
 
-#import "BBView.h"
+#import "AXCButtonView.h"
 #import <QuartzCore/QuartzCore.h>
 
 static CGFloat const buttonPadding = 10;
 
-@interface BBView ()
+@interface AXCButtonView ()
+@property (strong, nonatomic) NSMutableArray * buttons;
 @end
-@implementation BBView
+@implementation AXCButtonView
 @synthesize delegate;
 
 - (id)initWithFrame:(CGRect)frame
@@ -26,6 +27,29 @@ static CGFloat const buttonPadding = 10;
 }
 
 #pragma mark - Bubble Button Methods
+
+- (UIButton *)buttonForIndex:(NSInteger)index
+{
+    if (self.buttons.count > index) {
+        return self.buttons[index];
+    }
+    return nil;
+}
+
+- (void) loadButtons
+{
+    NSMutableArray * buttons = [NSMutableArray new];
+    NSInteger count = [self.dataSource numberOfButtonsInButtonView:self];
+    
+    for (int i = 0; i < count; i++) {
+        UIButton * button = [self.dataSource buttonView:self buttonForIndex:i];
+//        CGPoint
+        if (self.buttons.count > 0) {
+            
+        }
+//        [self addSubview:button];
+    }
+}
 
 -(void)fillBubbleViewWithButtons:(NSArray *)strings bgColor:(UIColor *)bgColor textColor:(UIColor *)textColor fontSize:(float)fsize {
     // Init array
