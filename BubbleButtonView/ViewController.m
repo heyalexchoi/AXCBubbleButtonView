@@ -33,6 +33,11 @@
     bubbleView.layer.shadowOpacity = 0.35f;
     UIBezierPath *path = [UIBezierPath bezierPathWithRect:bubbleView.bounds];
     bubbleView.layer.shadowPath = [path CGPath];
+    
+    bubbleView.frame = CGRectMake(bubbleView.frame.origin.x, bubbleView.frame.origin.y,
+                                  bubbleView.frame.size.width, 30);
+    
+    [self addButtons:nil];
 }
 
 
@@ -44,12 +49,12 @@
     // -- Ideally, you'd have a class variable so that whatever scheme
     //    your data is in, you can use and manipulate it with this array.
     // -- These strings will serve as my bubble buttons
-    NSArray *bubbleStringArray = @[@"Hello", @"this", @"is", @"a", @"test", @"of", @"the", @"BubbleButtonView", @"class", @"Each", @"one", @"of", @"these", @"is", @"a", @"button"];
+    NSArray *bubbleStringArray = @[@"some", @"fucking", @"thans", @"darn", @"coyotes", @"dangol", @"mang", @"BubbleButtonView", @"class", @"Each", @"one", @"of", @"these", @"is", @"a", @"button"];
     NSMutableArray * bigArray = [bubbleStringArray mutableCopy];
     [bigArray addObjectsFromArray:bigArray];
     [bigArray addObjectsFromArray:bigArray];
-        [bigArray addObjectsFromArray:bigArray];
-        [bigArray addObjectsFromArray:bigArray];
+    [bigArray addObjectsFromArray:bigArray];
+    [bigArray addObjectsFromArray:bigArray];
     
     // Create colors for buttons
     UIColor *textColor = [UIColor colorWithRed:255/255.0 green:47/255.0 blue:51/255.0 alpha:1.0];
@@ -63,14 +68,14 @@
 
 
 #pragma mark - BubbleButton Delegate
--(void)didClickBubbleButton:(UIButton *)bubble {
+-(void)bubbleButtonDidPress:(UIButton *)bubble {
     // Do something here
     // Use bubble.tag to use your data in the array
     // -- or bubble.titleLabel.text to access the string
     // -- etc.
     
     // Removing all buttons for demo purposes
-    [bubbleView removeBubbleButtonsWithInterval:0.034];
+//    [bubbleView removeBubbleButtonsWithInterval:0.034];
 }
 
 

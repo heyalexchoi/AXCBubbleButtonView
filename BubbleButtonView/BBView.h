@@ -9,15 +9,10 @@
 #import <UIKit/UIKit.h>
 
 @protocol BBDelegate
--(void)didClickBubbleButton:(UIButton *)bubble;
+-(void)bubbleButtonDidPress:(UIButton *)bubble;
 @end
 
 @interface BBView : UIView
-@property (nonatomic, weak) id <BBDelegate> delegate;
-@property (nonatomic, strong) NSMutableArray *buttons;
+@property (nonatomic, weak) id <BBDelegate, NSObject> delegate;
 -(void)fillBubbleViewWithButtons:(NSArray *)strings bgColor:(UIColor *)bgColor textColor:(UIColor *)textColor fontSize:(float)fsize;
--(void)addBubbleButtonsWithInterval:(float)ftime;
--(void)removeBubbleButtonsWithInterval:(float)ftime;
--(void)clickedBubbleButton:(UIButton *)bubble;
-
 @end

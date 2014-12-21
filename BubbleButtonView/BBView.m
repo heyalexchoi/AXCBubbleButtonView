@@ -10,8 +10,9 @@
 #import <QuartzCore/QuartzCore.h>
 
 static CGFloat const buttonPadding = 10;
-
+/*! Two rows of smartly sized buttons to display an array of button names.*/
 @interface BBView ()
+@property (nonatomic, strong) NSArray * buttons;
 @end
 @implementation BBView
 @synthesize delegate;
@@ -27,133 +28,73 @@ static CGFloat const buttonPadding = 10;
 
 #pragma mark - Bubble Button Methods
 
--(void)fillBubbleViewWithButtons:(NSArray *)strings bgColor:(UIColor *)bgColor textColor:(UIColor *)textColor fontSize:(float)fsize {
-    // Init array
-    self.buttons = [@[] mutableCopy];
+
+-(void)fillBubbleViewWithButtons:(NSArray *)strings bgColor:(UIColor *)bgColor textColor:(UIColor *)textColor fontSize:(float)fontSize {
     
-    // First check to see if there are already buttons there. If there aren't any
-    // subviews to bubbleView, then add these buttons.
-    
-    if (self.subviews.count == 0) {
+    NSMutableArray * buttons = [NSMutableArray new];
+    __block CGRect frame = CGRectZero;
+    [strings enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         
-        // Create padding between sides of view and each button
-        //  -- I recommend 10 for aesthetically pleasing results at a 14 fontSize
+        NSString * string = obj;
+        CGSize stringSize = [string sizeWithFont:[UIFont systemFontOfSize:fontSize] forWidth:CGFLOAT_MAX lineBreakMode:NSLineBreakByWordWrapping];
+        CGPoint bottomRight = CGPointMake(frame.origin.x + frame.size.width + 2 * buttonPadding + stringSize.width,
+                                          frame.origin.y + frame.size.height + 2 * buttonPadding + stringSize.height);
         
-        // Iterate over every string in the array to create the Bubble Button
-        for (int i = 0; i < strings.count; i++) {
+        if (bottomRight.x > self.bounds.size.width || CGRectEqualToRect(frame, CGRectZero)) {
             
-        
-            // Find the size of the button, turn it into a rect
-            NSString *string = [strings objectAtIndex:i];
-            CGSize stringSize = [string sizeWithFont:[UIFont systemFontOfSize:fsize] constrainedToSize:CGSizeMake(MAXFLOAT, MAXFLOAT) lineBreakMode:NSLineBreakByWordWrapping];
-            CGRect buttonRect = CGRectMake(buttonPadding, buttonPadding, stringSize.width + fsize, stringSize.height + fsize/2);
-            
-            
-            // if new button will fit on screen, in row:
-            //   - place it
-            // else:
-            //   - put on next row at beginning
-            if (i > 0) {
-                UIButton *previousButton = self.buttons[i-1];
-                CGFloat rightEdge = previousButton.frame.origin.x + previousButton.frame.size.width + 2 * buttonPadding + stringSize.width;
-                CGFloat bottomEdge = previousButton.frame.origin.y + previousButton.frame.size.height + 2 * buttonPadding + stringSize.height;
-                
-                
-                if (rightEdge > self.frame.size.width) {
-                    // new button would go over the right edge, put on new row
-                    buttonRect = CGRectMake(buttonPadding, previousButton.frame.origin.y + previousButton.frame.size.height + buttonPadding, stringSize.width + fsize, stringSize.height + fsize/2);
-                } else if (bottomEdge > self.frame.size.height) {
-                    // new button would go over the bottom edge, don't place that button yo
-                    return;
-                }
-                else {
-                    buttonRect = CGRectMake(previousButton.frame.origin.x + buttonPadding + previousButton.frame.size.width, previousButton.frame.origin.y, stringSize.width + fsize, stringSize.height + fsize/2);
-                }
+            if (bottomRight.y > self.bounds.size.height) {
+                stop = YES;
+                return;
             }
             
+            frame = CGRectMake(buttonPadding,
+                               frame.origin.y + frame.size.height + buttonPadding,
+                               stringSize.width + buttonPadding,
+                               stringSize.height + buttonPadding);
             
-            // Create button and make magic with the UI
-            // -- Set the alpha to 0, cause we're gonna' animate them at the end
-            UIButton *bButton = [[UIButton alloc] initWithFrame:buttonRect];
-            [bButton setShowsTouchWhenHighlighted:NO];
-            [bButton setTitle:string forState:UIControlStateNormal];
-            [bButton.titleLabel setFont:[UIFont systemFontOfSize:fsize]];
-            [bButton setTitleColor:textColor forState:UIControlStateNormal];
-            bButton.backgroundColor = bgColor;
-            bButton.layer.cornerRadius = (3*fsize/4);
-            bButton.alpha = 1;
-//            bButton.alpha = 0;
+        } else {
             
-            // Give it some data and a target
-            bButton.tag = i;
-            [bButton addTarget:self action:@selector(clickedBubbleButton:) forControlEvents:UIControlEventTouchUpInside];
+            frame = CGRectMake(frame.origin.x + frame.size.width + buttonPadding,
+                               frame.origin.y,
+                               stringSize.width + buttonPadding,
+                               stringSize.height + buttonPadding);
             
-            // And finally add a shadow
-            bButton.layer.shadowColor = [[UIColor blackColor] CGColor];
-            bButton.layer.shadowOffset = CGSizeMake(0.0f, 2.5f);
-            bButton.layer.shadowRadius = 5.0f;
-            bButton.layer.shadowOpacity = 0.35f;
-            UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:bButton.bounds cornerRadius:(3*fsize/4)];
-            bButton.layer.shadowPath = [path CGPath];
-            
-            // Add to the view, and to the array
-            [self addSubview:bButton];
-            [self.buttons addObject:bButton];
         }
         
-        // Sequentially animate the buttons appearing in view
-        // -- This is the interval between each button animating, not overall span
-        // -- I recommend 0.034 for an nice, smooth transition
-        [self addBubbleButtonsWithInterval:0.034];
-    }
+        UIButton * button = [self buttonWithFrame:frame title:string fontSize:fontSize textColor:textColor backgroundColor:bgColor tag:idx];
+        [self addSubview:button];
+        [buttons addObject:button];
+        
+    }];
     
-    NSLog(@"%d", self.subviews.count);
+    self.buttons = buttons;
 }
 
-
-
--(void)addBubbleButtonsWithInterval:(float)ftime {
-    // Make sure there are buttons to animate
-    // Take the first button in the array, animate alpha to 1
-    // Remove button from array
-    // Recur. Lather, rinse, repeat until all are buttons are on screen
-    
-    if (self.buttons.count > 0) {
-        UIButton *button = [self.buttons objectAtIndex:0];
-        [UIView animateWithDuration:ftime animations:^{
-            button.alpha = 1;
-        } completion:^(BOOL fin){
-            [self.buttons removeObjectAtIndex:0];
-            [self addBubbleButtonsWithInterval:ftime];
-        }];
-    }
+- (UIButton *) buttonWithFrame:(CGRect)buttonRect title:(NSString *)string fontSize:(CGFloat)fsize textColor:(UIColor *)textColor backgroundColor:(UIColor *) bgColor tag:(NSInteger)i
+{
+    UIButton *button = [[UIButton alloc] initWithFrame:buttonRect];
+    [button setShowsTouchWhenHighlighted:NO];
+    [button setTitle:string forState:UIControlStateNormal];
+    [button.titleLabel setFont:[UIFont systemFontOfSize:fsize]];
+    [button setTitleColor:textColor forState:UIControlStateNormal];
+    button.backgroundColor = bgColor;
+    button.layer.cornerRadius = (3*fsize/4);
+    button.alpha = 1;
+    button.tag = i;
+    [button addTarget:self action:@selector(bubbleButtonDidPress:) forControlEvents:UIControlEventTouchUpInside];
+    button.layer.shadowColor = [[UIColor blackColor] CGColor];
+    button.layer.shadowOffset = CGSizeMake(0.0f, 2.5f);
+    button.layer.shadowRadius = 5.0f;
+    button.layer.shadowOpacity = 0.35f;
+    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:button.bounds cornerRadius:(3*fsize/4)];
+    button.layer.shadowPath = [path CGPath];
+    return button;
 }
 
-
-
--(void)removeBubbleButtonsWithInterval:(float)ftime {
-    // Make sure there are buttons on screen to animate
-    // Take the last button on screen, animate alpha to 0
-    // Remove button from superview
-    // Recur. Lather, rinse, repeat until all buttons are off screen
-    
-    if (self.subviews.count > 0){
-        UIButton *button = [self.subviews objectAtIndex:self.subviews.count - 1];
-        [UIView animateWithDuration:ftime animations:^{
-            button.alpha = 0;
-        } completion:^(BOOL fin){
-            if (self.subviews.count > 0) {
-                [[self.subviews objectAtIndex:self.subviews.count - 1] removeFromSuperview];
-                [self removeBubbleButtonsWithInterval:ftime];
-            }
-        }];
+-(void)bubbleButtonDidPress:(UIButton *)button {
+    if ([self.delegate respondsToSelector:@selector(bubbleButtonDidPress:)]) {
+        [self.delegate bubbleButtonDidPress:button];
     }
-}
-
-
-
--(void)clickedBubbleButton:(UIButton *)bubble {
-    [delegate didClickBubbleButton:bubble];
 }
 
 
