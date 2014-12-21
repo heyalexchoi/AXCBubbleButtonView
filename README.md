@@ -1,3 +1,7 @@
+# herp derp I forked this project. I got rid of the animations, cleaned up the code, and told the button view to stop adding buttons once its view got full. This is all I need it to do for now. Some of the information below may no longer be pertinent.#
+
+
+
 BubbleButtonView
 ================
 
@@ -40,3 +44,5 @@ Reap What I Sow!
 ================
 
 This project is distributed under the standard MIT License. Please use this and twist it in whatever fashion you wish - and recommend any cool changes to help the code.
+
+
